@@ -614,4 +614,12 @@ Failed: {2}.</value>
   <data name="NoneAndAllOperationShouldBeAlone" xml:space="preserve">
     <value>None or All operation can't be used with other operations.</value>
   </data>
+  <data name="HttpFileEndPointFormat" xml:space="preserve">
+    <value>http://{0}.file.{1}/</value>
+    <comment>0 for storage account name, 1 for end point domain.</comment>
+  </data>
+  <data name="HttpsFileEndPointFormat" xml:space="preserve">
+    <value>https://{0}.file.{1}/</value>
+    <comment>0 for storage account name, 1 for end point domain.</comment>
+  </data>
 </root>

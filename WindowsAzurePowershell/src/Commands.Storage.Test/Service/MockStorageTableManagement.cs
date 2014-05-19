@@ -21,6 +21,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Test.Service
     using System.Linq;
     using System.Text;
     using Model.Contract;
+    using Microsoft.WindowsAzure.Storage.Auth;
 
     /// <summary>
     /// Mocked table management
@@ -93,7 +94,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Test.Service
         public CloudTable GetTableReference(string name)
         {
             Uri tableUri = new Uri(String.Format("{0}{1}", TableEndPoint, name));
-            CloudTableClient tableClient = new CloudTableClient(new Uri(TableEndPoint));
+            CloudTableClient tableClient = new CloudTableClient(new Uri(TableEndPoint), new StorageCredentials());
             return new CloudTable(tableUri);
         }
 

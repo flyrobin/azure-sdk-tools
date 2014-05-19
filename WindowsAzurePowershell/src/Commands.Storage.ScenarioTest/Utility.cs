@@ -79,12 +79,14 @@ namespace Commands.Storage.ScenarioTest
 
             endPoint = endPoint.Trim();
 
-            string[] storageEndPoints = new string[3]
+            string[] storageEndPoints = new string[4]
                 {
                     string.Format("{0}://{1}.blob.{2}/", protocol, storageAccountName, endPoint),
                     string.Format("{0}://{1}.queue.{2}/", protocol, storageAccountName, endPoint),
-                    string.Format("{0}://{1}.table.{2}/", protocol, storageAccountName, endPoint)
+                    string.Format("{0}://{1}.table.{2}/", protocol, storageAccountName, endPoint),
+                    string.Format("{0}://{1}.file.{2}/", protocol, storageAccountName, endPoint)
                 };
+
             return storageEndPoints;
         }
 
@@ -98,7 +100,7 @@ namespace Commands.Storage.ScenarioTest
         public static CloudStorageAccount GetStorageAccountWithEndPoint(StorageCredentials credential, bool useHttps, string endPoint = "")
         {
             string[] endPoints = GetStorageEndPoints(credential.AccountName, useHttps, endPoint);
-            return new CloudStorageAccount(credential, new Uri(endPoints[0]), new Uri(endPoints[1]), new Uri(endPoints[2]));
+            return new CloudStorageAccount(credential, new Uri(endPoints[0]), new Uri(endPoints[1]), new Uri(endPoints[2]), new Uri(endPoints[3]));
         }
 
 
@@ -204,7 +206,7 @@ namespace Commands.Storage.ScenarioTest
                     return false;
                 }
             }
-            
+
             foreach (var propertyInfo in typeof(T).GetProperties())
             {
                 if (propertyInfo.Name.Equals("ServiceClient"))
@@ -219,7 +221,7 @@ namespace Commands.Storage.ScenarioTest
                     o2 = propertyInfo.GetValue(v2, null);
                 }
                 catch
-                { 
+                {
                     //skip the comparison when throw exception
                     string msg = string.Format("Skip compare '{0}' property in type {1}", propertyInfo.Name, typeof(T));
                     Trace.WriteLine(msg);
@@ -229,7 +231,7 @@ namespace Commands.Storage.ScenarioTest
 
                 if (propertyInfo.Name.Equals("Metadata"))
                 {
-                    if (v1.GetType() == typeof(CloudBlobContainer) 
+                    if (v1.GetType() == typeof(CloudBlobContainer)
                         || v1.GetType() == typeof(CloudBlockBlob)
                         || v1.GetType() == typeof(CloudPageBlob)
                         || v1.GetType() == typeof(CloudQueue)

@@ -975,7 +975,8 @@ namespace Microsoft.WindowsAzure.Commands.Utilities.CloudService
                 credentials,
                 GeneralUtilities.CreateHttpsEndpoint(storageService.StorageAccount.Properties.Endpoints[0].ToString()),
                 GeneralUtilities.CreateHttpsEndpoint(storageService.StorageAccount.Properties.Endpoints[1].ToString()),
-                GeneralUtilities.CreateHttpsEndpoint(storageService.StorageAccount.Properties.Endpoints[2].ToString())
+                GeneralUtilities.CreateHttpsEndpoint(storageService.StorageAccount.Properties.Endpoints[2].ToString()),
+                GeneralUtilities.CreateHttpsEndpoint(storageService.StorageAccount.Properties.Endpoints[3].ToString())
                 );
 
             return cloudStorageAccount.ToString(true);
