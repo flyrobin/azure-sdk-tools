@@ -196,6 +196,15 @@ namespace Microsoft.WindowsAzure.Commands.Storage {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified cloud file &apos;{0}&apos; already exists. If you want to overwrite this file, use -Force option..
+        /// </summary>
+        internal static string CloudFileConflict {
+            get {
+                return ResourceManager.GetString("CloudFileConflict", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0}-{1}.
         /// </summary>
         internal static string CmdletFormat {
@@ -507,6 +516,15 @@ namespace Microsoft.WindowsAzure.Commands.Storage {
         internal static string FileNameFormatForSnapShot {
             get {
                 return ResourceManager.GetString("FileNameFormatForSnapShot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The given file name &apos;{0}&apos; is not valid since a file name could not end with a &apos;/&apos; forward slash..
+        /// </summary>
+        internal static string FileNameShouldNotEndWithSlash {
+            get {
+                return ResourceManager.GetString("FileNameShouldNotEndWithSlash", resourceCulture);
             }
         }
         
@@ -862,6 +880,15 @@ namespace Microsoft.WindowsAzure.Commands.Storage {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The specified path does not represent any resource on the server..
+        /// </summary>
+        internal static string InvalidResource {
+            get {
+                return ResourceManager.GetString("InvalidResource", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The minimum value of retention days is 1, the largest value is 365 (one year). -1 means turn off the retention policy. Current is {0}..
         /// </summary>
         internal static string InvalidRetentionDay {
@@ -903,6 +930,15 @@ namespace Microsoft.WindowsAzure.Commands.Storage {
         internal static string InvalidTableName {
             get {
                 return ResourceManager.GetString("InvalidTableName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified timeout value ({0}) was out of range. The timeout accepted is in seconds and can only be a positive integer or -1..
+        /// </summary>
+        internal static string InvalidTimeoutValue {
+            get {
+                return ResourceManager.GetString("InvalidTimeoutValue", resourceCulture);
             }
         }
         
@@ -966,6 +1002,24 @@ namespace Microsoft.WindowsAzure.Commands.Storage {
         internal static string OverwriteConfirmation {
             get {
                 return ResourceManager.GetString("OverwriteConfirmation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The given path/prefix &apos;{0}&apos; is not a valid name for a file or directory or does match the requirement for Windows Azure File Service REST API..
+        /// </summary>
+        internal static string PathInvalid {
+            get {
+                return ResourceManager.GetString("PathInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The length of the given path/prefix &apos;{0}&apos; exceeded the max allowed length {1} for Windows Azure File Service REST API..
+        /// </summary>
+        internal static string PathTooLong {
+            get {
+                return ResourceManager.GetString("PathTooLong", resourceCulture);
             }
         }
         
@@ -1114,6 +1168,15 @@ namespace Microsoft.WindowsAzure.Commands.Storage {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The given share name/prefix &apos;{0}&apos; is not a valid name for a file share of Windows Azure File Service..
+        /// </summary>
+        internal static string ShareNameInvalid {
+            get {
+                return ResourceManager.GetString("ShareNameInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This expiry time field must be omitted if it has been specified in an associated stored access policy..
         /// </summary>
         internal static string SignedExpiryTimeMustBeOmitted {
@@ -1137,6 +1200,15 @@ namespace Microsoft.WindowsAzure.Commands.Storage {
         internal static string SkipDownloadSnapshot {
             get {
                 return ResourceManager.GetString("SkipDownloadSnapshot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The specified source file &apos;{0}&apos; was not found..
+        /// </summary>
+        internal static string SourceFileNotFound {
+            get {
+                return ResourceManager.GetString("SourceFileNotFound", resourceCulture);
             }
         }
         

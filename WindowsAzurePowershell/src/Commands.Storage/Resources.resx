@@ -614,6 +614,12 @@ Failed: {2}.</value>
   <data name="NoneAndAllOperationShouldBeAlone" xml:space="preserve">
     <value>None or All operation can't be used with other operations.</value>
   </data>
+  <data name="CloudFileConflict" xml:space="preserve">
+    <value>The specified cloud file '{0}' already exists. If you want to overwrite this file, use -Force option.</value>
+  </data>
+  <data name="FileNameShouldNotEndWithSlash" xml:space="preserve">
+    <value>The given file name '{0}' is not valid since a file name could not end with a '/' forward slash.</value>
+  </data>
   <data name="HttpFileEndPointFormat" xml:space="preserve">
     <value>http://{0}.file.{1}/</value>
     <comment>0 for storage account name, 1 for end point domain.</comment>
@@ -621,5 +627,23 @@ Failed: {2}.</value>
   <data name="HttpsFileEndPointFormat" xml:space="preserve">
     <value>https://{0}.file.{1}/</value>
     <comment>0 for storage account name, 1 for end point domain.</comment>
+  </data>
+  <data name="InvalidResource" xml:space="preserve">
+    <value>The specified path does not represent any resource on the server.</value>
+  </data>
+  <data name="InvalidTimeoutValue" xml:space="preserve">
+    <value>The specified timeout value ({0}) was out of range. The timeout accepted is in seconds and can only be a positive integer or -1.</value>
+  </data>
+  <data name="PathInvalid" xml:space="preserve">
+    <value>The given path/prefix '{0}' is not a valid name for a file or directory or does match the requirement for Windows Azure File Service REST API.</value>
+  </data>
+  <data name="PathTooLong" xml:space="preserve">
+    <value>The length of the given path/prefix '{0}' exceeded the max allowed length {1} for Windows Azure File Service REST API.</value>
+  </data>
+  <data name="ShareNameInvalid" xml:space="preserve">
+    <value>The given share name/prefix '{0}' is not a valid name for a file share of Windows Azure File Service.</value>
+  </data>
+  <data name="SourceFileNotFound" xml:space="preserve">
+    <value>The specified source file '{0}' was not found.</value>
   </data>
 </root>
