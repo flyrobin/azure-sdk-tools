@@ -38,7 +38,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Common
     {
         [Parameter(HelpMessage = "Azure Storage Context Object",
             ValueFromPipelineByPropertyName = true)]
-        public virtual AzureStorageContext Context {get; set;}
+        public virtual AzureStorageContext Context { get; set; }
 
         [Parameter(HelpMessage = "The server time out for each request in seconds.")]
         public virtual int? ServerTimeoutPerRequest { get; set; }
@@ -107,12 +107,12 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Common
         /// <summary>
         /// Cmdlet operation context.
         /// </summary>
-        protected OperationContext OperationContext 
+        protected OperationContext OperationContext
         {
             get
             {
                 return CmdletOperationContext.GetStorageOperationContext(WriteDebugLog);
-            }    
+            }
         }
 
         /// <summary>
@@ -153,14 +153,14 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Common
                     throw new ArgumentException(Resources.InvalidStorageServiceType, "type");
             }
 
-            if (ServerTimeoutPerRequest != null)
+            if (this.ServerTimeoutPerRequest.HasValue)
             {
-                options.ServerTimeout = TimeSpan.FromSeconds((double)ServerTimeoutPerRequest);
+                options.ServerTimeout = ConvertToTimeSpan(this.ServerTimeoutPerRequest.Value);
             }
 
-            if (ClientTimeoutPerRequest != null)
+            if (this.ClientTimeoutPerRequest.HasValue)
             {
-                options.MaximumExecutionTime = TimeSpan.FromSeconds((double)ClientTimeoutPerRequest);
+                options.MaximumExecutionTime = ConvertToTimeSpan(this.ClientTimeoutPerRequest.Value);
             }
 
             return options;
@@ -262,6 +262,38 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Common
         }
 
         /// <summary>
+        /// Convert the timeout in seconds into objects of TimeSpan. Notice
+        /// that xSCL does not accept a TimeSpan whose TotalMilliseconds
+        /// property exceeded int.MaxValue (2147483647) so if user specified a
+        /// value beyond that, we will use Infinite instead.
+        /// </summary>
+        /// <param name="timeoutInSeconds"></param>
+        /// <returns></returns>
+        private static TimeSpan? ConvertToTimeSpan(int timeoutInSeconds)
+        {
+            if (timeoutInSeconds > 0)
+            {
+                var timeSpan = TimeSpan.FromSeconds(timeoutInSeconds);
+                if ((long)timeSpan.TotalMilliseconds > int.MaxValue)
+                {
+                    return null;
+                }
+                else
+                {
+                    return timeSpan;
+                }
+            }
+            else if (timeoutInSeconds == Timeout.Infinite)
+            {
+                return null;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(string.Format(CultureInfo.CurrentCulture, Resources.InvalidTimeoutValue, timeoutInSeconds));
+            }
+        }
+
+        /// <summary>
         /// Get current storage account from azure subscription
         /// </summary>
         /// <returns>A storage account</returns>
@@ -336,12 +368,12 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Common
         protected override void WriteExceptionError(Exception e)
         {
             Debug.Assert(e != null, Resources.ExceptionCannotEmpty);
-            
+
             if (e is StorageException)
             {
-                e = ((StorageException) e).RepackStorageException();
+                e = ((StorageException)e).RepackStorageException();
             }
-            
+
             WriteError(new ErrorRecord(e, e.GetType().Name, GetExceptionErrorCategory(e), null));
         }
 
@@ -503,7 +535,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Common
             CmdletOperationContext.Init();
             CmdletCancellationToken = cancellationTokenSource.Token;
             WriteDebugLog(String.Format(Resources.InitOperationContextLog, this.GetType().Name, CmdletOperationContext.ClientRequestId));
-            
+
             if (enableMultiThread)
             {
                 SetUpMultiThreadEnvironment();
