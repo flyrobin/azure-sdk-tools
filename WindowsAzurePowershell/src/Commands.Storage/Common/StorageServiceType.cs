@@ -23,6 +23,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Common
     {
         Blob,
         Table,
-        Queue
+        Queue,
+        File,
     }
 }

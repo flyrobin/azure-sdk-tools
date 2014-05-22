@@ -56,7 +56,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
             HelpMessage = "Path to an existing directory.")]
         public string Path { get; set; }
 
-        protected override void ExecuteCmdletInternal()
+        public override void ExecuteCmdlet()
         {
             CloudFileDirectory baseDirectory;
             string[] subFolders = NamingUtil.ValidatePath(this.Path);
@@ -78,7 +78,12 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
                     throw new PSArgumentException(string.Format(CultureInfo.InvariantCulture, "Invalid parameter set name: {0}", this.ParameterSetName));
             }
 
-            this.WriteObject(baseDirectory.GetDirectoryReferenceByPath(subFolders).ListFilesAndDirectories(this.RequestOptions, this.OperationContext), true);
+            this.WriteObject(
+                this.Channel.ListFilesAndDirectories(
+                    baseDirectory.GetDirectoryReferenceByPath(subFolders),
+                    this.RequestOptions,
+                    this.OperationContext),
+                true);
         }
     }
 }

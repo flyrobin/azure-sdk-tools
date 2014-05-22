@@ -212,6 +212,7 @@
     <Compile Include="File\NamingUtil.cs" />
     <Compile Include="File\StorageClientExtensions.cs" />
     <Compile Include="File\StorageCmdletBase.cs" />
+    <Compile Include="Model\Contract\IStorageFileManagement.cs" />
     <Compile Include="Model\Contract\IStorageManagement.cs" />
     <Compile Include="Common\StorageServiceType.cs" />
     <Compile Include="Model\Contract\IStorageQueueManagement.cs" />

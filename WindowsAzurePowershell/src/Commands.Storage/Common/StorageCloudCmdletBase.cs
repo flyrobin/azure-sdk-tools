@@ -25,6 +25,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Common
     using Commands.Utilities.Common;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
+    using Microsoft.WindowsAzure.Storage.File;
     using Microsoft.WindowsAzure.Storage.Queue;
     using Microsoft.WindowsAzure.Storage.Table;
     using Model.ResourceModel;
@@ -148,6 +149,9 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Common
                     break;
                 case StorageServiceType.Table:
                     options = new TableRequestOptions();
+                    break;
+                case StorageServiceType.File:
+                    options = new FileRequestOptions();
                     break;
                 default:
                     throw new ArgumentException(Resources.InvalidStorageServiceType, "type");

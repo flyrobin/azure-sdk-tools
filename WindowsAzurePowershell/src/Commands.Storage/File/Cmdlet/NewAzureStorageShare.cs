@@ -30,8 +30,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
         {
             NamingUtil.ValidateShareName(this.Name, false);
 
-            var client = this.GetCloudFileClient();
-            var share = client.GetShareReference(this.Name);
+            var share = this.Channel.GetShareReference(this.Name);
             share.Create(this.RequestOptions, this.OperationContext);
             this.WriteObject(share);
         }
