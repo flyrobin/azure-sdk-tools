@@ -81,7 +81,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
         [Parameter(HelpMessage = "Returns an object representing the removed file. By default, this cmdlet does not generate any output.")]
         public SwitchParameter PassThru { get; set; }
 
-        protected override void ExecuteCmdletInternal()
+        public override void ExecuteCmdlet()
         {
             string[] path = NamingUtil.ValidatePath(this.Path, true);
             CloudFile fileToBeRemoved;
@@ -108,15 +108,18 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
                     throw new PSArgumentException(string.Format(CultureInfo.InvariantCulture, "Invalid parameter set name: {0}", this.ParameterSetName));
             }
 
-            if (this.ShouldProcess(fileToBeRemoved.GetFullPath()))
+            this.RunTask(async taskId =>
             {
-                fileToBeRemoved.Delete(this.AccessCondition, this.RequestOptions, this.OperationContext);
-            }
+                if (this.ShouldProcess(fileToBeRemoved.GetFullPath()))
+                {
+                    await this.Channel.DeleteFileAsync(fileToBeRemoved, this.AccessCondition, this.RequestOptions, this.OperationContext, this.CmdletCancellationToken);
+                }
 
-            if (this.PassThru)
-            {
-                this.WriteObject(fileToBeRemoved);
-            }
+                if (this.PassThru)
+                {
+                    this.OutputStream.WriteObject(taskId, fileToBeRemoved);
+                }
+            });
         }
     }
 }

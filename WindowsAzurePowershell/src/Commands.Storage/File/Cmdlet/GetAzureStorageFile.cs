@@ -78,12 +78,15 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
                     throw new PSArgumentException(string.Format(CultureInfo.InvariantCulture, "Invalid parameter set name: {0}", this.ParameterSetName));
             }
 
-            this.WriteObject(
-                this.Channel.ListFilesAndDirectories(
+            this.RunTask(async (taskId) =>
+            {
+                await this.Channel.EnumerateFilesAndDirectoriesAsync(
                     baseDirectory.GetDirectoryReferenceByPath(subFolders),
+                    item => this.OutputStream.WriteObject(taskId, item),
                     this.RequestOptions,
-                    this.OperationContext),
-                true);
+                    this.OperationContext,
+                    this.CmdletCancellationToken);
+            });
         }
     }
 }

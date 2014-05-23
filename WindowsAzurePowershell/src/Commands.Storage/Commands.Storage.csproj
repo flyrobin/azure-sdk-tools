@@ -211,12 +211,12 @@
     <Compile Include="File\ErrorIdConstants.cs" />
     <Compile Include="File\NamingUtil.cs" />
     <Compile Include="File\StorageClientExtensions.cs" />
-    <Compile Include="File\StorageCmdletBase.cs" />
     <Compile Include="Model\Contract\IStorageFileManagement.cs" />
     <Compile Include="Model\Contract\IStorageManagement.cs" />
     <Compile Include="Common\StorageServiceType.cs" />
     <Compile Include="Model\Contract\IStorageQueueManagement.cs" />
     <Compile Include="Model\Contract\IStorageTableManagement.cs" />
+    <Compile Include="Model\Contract\StorageFileManagement.cs" />
     <Compile Include="Model\Contract\StorageQueueManagement.cs" />
     <Compile Include="Model\ResourceModel\AzureStorageQueue.cs" />
     <Compile Include="Model\Contract\StorageTableManagement.cs" />

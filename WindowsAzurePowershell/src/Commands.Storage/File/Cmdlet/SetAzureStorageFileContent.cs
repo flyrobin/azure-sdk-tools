@@ -19,6 +19,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
     using System.IO;
     using System.Management.Automation;
     using System.Net;
+    using System.Threading.Tasks;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.File;
 
@@ -70,23 +71,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
         [Parameter(HelpMessage = "Returns an object representing the downloaded cloud file. By default, this cmdlet does not generate any output.")]
         public SwitchParameter PassThru { get; set; }
 
-        protected override TimeSpan DefaultClientTimeoutPerRequest
-        {
-            get
-            {
-                return Constants.DefaultTimeoutForDownloadingAndUploading;
-            }
-        }
-
-        protected override TimeSpan DefaultServerTimeoutPerRequest
-        {
-            get
-            {
-                return Constants.DefaultTimeoutForDownloadingAndUploading;
-            }
-        }
-
-        protected override void ExecuteCmdletInternal()
+        public override void ExecuteCmdlet()
         {
             // Step 1: Validate source file.
             FileInfo localFile = new FileInfo(this.GetUnresolvedProviderPathFromPSPath(this.Source));
@@ -97,38 +82,44 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
 
             // Step 2: Build the CloudFile object which pointed to the
             // destination cloud file.
-            bool isDirectory;
-            string[] path = NamingUtil.ValidatePath(this.Path, out isDirectory);
-            var cloudFileToBeUploaded = this.BuildCloudFileInstanceFromPath(localFile.Name, path, isDirectory);
-
-            if (!this.Force && cloudFileToBeUploaded.Exists(this.RequestOptions, this.OperationContext))
+            this.RunTask(async taskId =>
             {
-                throw new AzureStorageFileException(
-                    ErrorCategory.InvalidArgument,
-                    ErrorIdConstants.ResourceAlreadyExists,
-                    string.Format(CultureInfo.CurrentCulture, Resources.CloudFileConflict, cloudFileToBeUploaded.Name),
-                    this);
-            }
+                bool isDirectory;
+                string[] path = NamingUtil.ValidatePath(this.Path, out isDirectory);
+                var cloudFileToBeUploaded = await this.BuildCloudFileInstanceFromPathAsync(localFile.Name, path, isDirectory);
 
-            // Step 3: Creates the file before upload it. Notice that create operaiton
-            // would replace a file if it already exists.
-            cloudFileToBeUploaded.Create(localFile.Length, this.AccessCondition, this.RequestOptions, this.OperationContext);
+                if (!this.Force && await this.Channel.FileExistsAsync(cloudFileToBeUploaded, this.RequestOptions, this.OperationContext, this.CmdletCancellationToken))
+                {
+                    throw new AzureStorageFileException(
+                        ErrorCategory.InvalidArgument,
+                        ErrorIdConstants.ResourceAlreadyExists,
+                        string.Format(CultureInfo.CurrentCulture, Resources.CloudFileConflict, cloudFileToBeUploaded.Name),
+                        this);
+                }
 
-            // Step 4: Upload the content of the source file.
-            cloudFileToBeUploaded.UploadFromFile(
-                localFile.FullName,
-                FileMode.Open,
-                this.AccessCondition,
-                this.RequestOptions,
-                this.OperationContext);
+                // TODO: Use DMLib to upload file.
 
-            if (this.PassThru)
-            {
-                this.WriteObject(cloudFileToBeUploaded);
-            }
+                // Step 3: Creates the file before upload it. Notice that create operaiton
+                // would replace a file if it already exists.
+                await cloudFileToBeUploaded.CreateAsync(localFile.Length, this.AccessCondition, this.RequestOptions, this.OperationContext, this.CmdletCancellationToken);
+
+                // Step 4: Upload the content of the source file.
+                await cloudFileToBeUploaded.UploadFromFileAsync(
+                    localFile.FullName,
+                    FileMode.Open,
+                    this.AccessCondition,
+                    this.RequestOptions,
+                    this.OperationContext,
+                    this.CmdletCancellationToken);
+
+                if (this.PassThru)
+                {
+                    this.OutputStream.WriteObject(taskId, cloudFileToBeUploaded);
+                }
+            });
         }
 
-        private CloudFile BuildCloudFileInstanceFromPath(string defaultFileName, string[] path, bool pathIsDirectory)
+        private async Task<CloudFile> BuildCloudFileInstanceFromPathAsync(string defaultFileName, string[] path, bool pathIsDirectory)
         {
             CloudFileDirectory baseDirectory = null;
             bool isPathEmpty = path.Length == 0;
@@ -166,7 +157,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
 
             try
             {
-                directoryExists = directory.Exists(this.RequestOptions, this.OperationContext);
+                directoryExists = await this.Channel.DirectoryExistsAsync(directory, this.RequestOptions, this.OperationContext, this.CmdletCancellationToken);
             }
             catch (StorageException e)
             {

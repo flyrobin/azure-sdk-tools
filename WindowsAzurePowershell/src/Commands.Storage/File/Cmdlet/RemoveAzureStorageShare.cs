@@ -46,32 +46,35 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
         [Parameter(HelpMessage = "Returns an object representing the removed file share. By default, this cmdlet does not generate any output.")]
         public SwitchParameter PassThru { get; set; }
 
-        protected override void ExecuteCmdletInternal()
+        public override void ExecuteCmdlet()
         {
-            CloudFileShare container;
+            CloudFileShare share;
             switch (this.ParameterSetName)
             {
                 case Constants.ShareParameterSetName:
-                    container = this.Share;
+                    share = this.Share;
                     break;
 
                 case Constants.ShareNameParameterSetName:
-                    container = this.BuildFileShareObjectFromName(this.Name);
+                    share = this.BuildFileShareObjectFromName(this.Name);
                     break;
 
                 default:
                     throw new PSArgumentException(string.Format(CultureInfo.InvariantCulture, "Invalid parameter set name: {0}", this.ParameterSetName));
             }
 
-            if (this.ShouldProcess(container.Name))
+            this.RunTask(async taskId =>
             {
-                container.Delete(this.AccessCondition, this.RequestOptions, this.OperationContext);
-            }
+                if (this.ShouldProcess(share.Name))
+                {
+                    await this.Channel.DeleteShareAsync(share, this.AccessCondition, this.RequestOptions, this.OperationContext, this.CmdletCancellationToken);
+                }
 
-            if (this.PassThru)
-            {
-                this.WriteObject(container);
-            }
+                if (this.PassThru)
+                {
+                    this.OutputStream.WriteObject(taskId, share);
+                }
+            });
         }
     }
 }

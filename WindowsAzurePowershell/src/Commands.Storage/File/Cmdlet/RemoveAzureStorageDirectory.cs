@@ -71,7 +71,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
         [Parameter(HelpMessage = "Returns an object representing the removed directory. By default, this cmdlet does not generate any output.")]
         public SwitchParameter PassThru { get; set; }
 
-        protected override void ExecuteCmdletInternal()
+        public override void ExecuteCmdlet()
         {
             string[] path = NamingUtil.ValidatePath(this.Path);
             CloudFileDirectory baseDirectory;
@@ -95,15 +95,18 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
             }
 
             var directoryToBeRemoved = baseDirectory.GetDirectoryReferenceByPath(path);
-            if (this.ShouldProcess(directoryToBeRemoved.GetFullPath()))
+            this.RunTask(async taskId =>
             {
-                directoryToBeRemoved.Delete(this.AccessCondition, this.RequestOptions, this.OperationContext);
-            }
+                if (this.ShouldProcess(directoryToBeRemoved.GetFullPath()))
+                {
+                    await this.Channel.DeleteDirectoryAsync(directoryToBeRemoved, this.AccessCondition, this.RequestOptions, this.OperationContext, this.CmdletCancellationToken);
+                }
 
-            if (this.PassThru)
-            {
-                this.WriteObject(baseDirectory);
-            }
+                if (this.PassThru)
+                {
+                    this.OutputStream.WriteObject(taskId, baseDirectory);
+                }
+            });
         }
     }
 }

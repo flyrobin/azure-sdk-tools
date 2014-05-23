@@ -37,6 +37,23 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File
             }
         }
 
+        protected AccessCondition AccessCondition
+        {
+            get
+            {
+                return AccessCondition.GenerateEmptyCondition();
+            }
+        }
+
+        protected override IStorageFileManagement CreateChannel()
+        {
+            if (this.Channel == null||!this.ShareChannel)
+            {
+                this.Channel = new StorageFileManagement(this.GetCmdletStorageContext());
+            }
+
+            return this.Channel;
+        }
 
         protected CloudFileShare BuildFileShareObjectFromName(string name)
         {

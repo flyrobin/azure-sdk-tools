@@ -53,7 +53,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
         [ValidateNotNullOrEmpty]
         public string Path { get; set; }
 
-        protected override void ExecuteCmdletInternal()
+        public override void ExecuteCmdlet()
         {
             string[] path = NamingUtil.ValidatePath(this.Path);
 
@@ -78,8 +78,11 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
             }
 
             var directoryToBeCreated = baseDirectory.GetDirectoryReferenceByPath(path);
-            directoryToBeCreated.Create(this.RequestOptions, this.OperationContext);
-            this.WriteObject(directoryToBeCreated);
+            this.RunTask(async taskId =>
+            {
+                await this.Channel.CreateDirectoryAsync(directoryToBeCreated, this.RequestOptions, this.OperationContext, this.CmdletCancellationToken);
+                this.OutputStream.WriteObject(taskId, directoryToBeCreated);
+            });
         }
     }
 }

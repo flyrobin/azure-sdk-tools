@@ -26,13 +26,16 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
         [ValidateNotNullOrEmpty]
         public string Name { get; set; }
 
-        protected override void ExecuteCmdletInternal()
+        public override void ExecuteCmdlet()
         {
             NamingUtil.ValidateShareName(this.Name, false);
 
             var share = this.Channel.GetShareReference(this.Name);
-            share.Create(this.RequestOptions, this.OperationContext);
-            this.WriteObject(share);
+            this.RunTask(async taskId =>
+            {
+                await this.Channel.CreateShareAsync(share, this.RequestOptions, this.OperationContext, this.CmdletCancellationToken);
+                this.OutputStream.WriteObject(taskId, share);
+            });
         }
     }
 }

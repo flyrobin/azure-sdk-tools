@@ -102,24 +102,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
 
         [Parameter(HelpMessage = "Returns an object representing the downloaded cloud file. By default, this cmdlet does not generate any output.")]
         public SwitchParameter PassThru { get; set; }
-
-        protected override TimeSpan DefaultClientTimeoutPerRequest
-        {
-            get
-            {
-                return Constants.DefaultTimeoutForDownloadingAndUploading;
-            }
-        }
-
-        protected override TimeSpan DefaultServerTimeoutPerRequest
-        {
-            get
-            {
-                return Constants.DefaultTimeoutForDownloadingAndUploading;
-            }
-        }
-
-        protected override void ExecuteCmdletInternal()
+        public override void ExecuteCmdlet()
         {
             CloudFile fileToBeDownloaded;
             string[] path = NamingUtil.ValidatePath(this.Path, true);
@@ -166,17 +149,21 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File.Cmdlet
                 targetFile = resolvedDestination;
             }
 
-            fileToBeDownloaded.DownloadToFile(
-                targetFile,
-                mode,
-                this.AccessCondition,
-                this.RequestOptions,
-                this.OperationContext);
-
-            if (this.PassThru)
+            this.RunTask(async taskId =>
             {
-                this.WriteObject(fileToBeDownloaded);
-            }
+                await fileToBeDownloaded.DownloadToFileAsync(
+                    targetFile,
+                    mode,
+                    this.AccessCondition,
+                    this.RequestOptions,
+                    this.OperationContext,
+                    this.CmdletCancellationToken);
+
+                if (this.PassThru)
+                {
+                    this.OutputStream.WriteObject(taskId, fileToBeDownloaded);
+                }
+            });
         }
     }
 }
