@@ -22,6 +22,8 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Model.ResourceModel
     /// </summary>
     public class AzureStorageContext
     {
+        private static AzureStorageContext mockInstance = new AzureStorageContext();
+
         /// <summary>
         /// Storage account name used in this context
         /// </summary>
@@ -94,6 +96,21 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Model.ResourceModel
                 {
                     StorageAccountName = Resources.AnonymousAccountName;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Proivides a private constructor only mocking up empty instance.
+        /// </summary>
+        private AzureStorageContext()
+        {
+        }
+
+        public static AzureStorageContext MockInstance
+        {
+            get
+            {
+                return mockInstance;
             }
         }
     }

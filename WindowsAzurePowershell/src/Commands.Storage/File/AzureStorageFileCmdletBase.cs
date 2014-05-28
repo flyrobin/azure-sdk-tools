@@ -29,6 +29,20 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File
 
     public abstract class AzureStorageFileCmdletBase : StorageCloudCmdletBase<IStorageFileManagement>
     {
+        [Parameter(
+            ValueFromPipeline = true,
+            ParameterSetName = Constants.ShareNameParameterSetName,
+            HelpMessage = "Azure Storage Context Object")]
+        [Parameter(
+            ValueFromPipeline = true,
+            ParameterSetName = Constants.MatchingPrefixParameterSetName,
+            HelpMessage = "Azure Storage Context Object")]
+        [Parameter(
+            ValueFromPipeline = true,
+            ParameterSetName = Constants.SpecificParameterSetName,
+            HelpMessage = "Azure Storage Context Object")]
+        public override AzureStorageContext Context { get; set; }
+
         protected FileRequestOptions RequestOptions
         {
             get
@@ -47,9 +61,15 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File
 
         protected override IStorageFileManagement CreateChannel()
         {
-            if (this.Channel == null||!this.ShareChannel)
+            if (this.Channel == null || !this.ShareChannel)
             {
-                this.Channel = new StorageFileManagement(this.GetCmdletStorageContext());
+                this.Channel = new StorageFileManagement(
+                    this.ParameterSetName == Constants.ShareNameParameterSetName ||
+                    this.ParameterSetName == Constants.MatchingPrefixParameterSetName ||
+                    this.ParameterSetName == Constants.SpecificParameterSetName ?
+                    this.GetCmdletStorageContext() :
+                    AzureStorageContext.MockInstance
+                );
             }
 
             return this.Channel;

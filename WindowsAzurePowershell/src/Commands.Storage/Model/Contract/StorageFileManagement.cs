@@ -31,7 +31,6 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Model.Contract
         public StorageFileManagement(AzureStorageContext context)
         {
             this.StorageContext = context;
-            this.client = context.StorageAccount.CreateCloudFileClient();
         }
 
         public AzureStorageContext StorageContext
@@ -40,9 +39,29 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Model.Contract
             private set;
         }
 
+        private CloudFileClient Client
+        {
+            get
+            {
+                if (this.client == null)
+                {
+                    if (this.StorageContext.StorageAccount == null)
+                    {
+                        throw new ArgumentException(Resources.DefaultStorageCredentialsNotFound);
+                    }
+                    else
+                    {
+                        this.client = this.StorageContext.StorageAccount.CreateCloudFileClient();
+                    }
+                }
+
+                return this.client;
+            }
+        }
+
         public CloudFileShare GetShareReference(string shareName)
         {
-            return this.client.GetShareReference(shareName);
+            return this.Client.GetShareReference(shareName);
         }
 
         public async Task EnumerateFilesAndDirectoriesAsync(CloudFileDirectory directory, Action<IListFileItem> enumerationAction, FileRequestOptions options, OperationContext operationContext, CancellationToken token)
@@ -71,7 +90,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Model.Contract
             FileContinuationToken continuationToken = null;
             do
             {
-                var segment = await this.client.ListSharesSegmentedAsync(prefix, detailsIncluded, null, continuationToken, options, operationContext, token);
+                var segment = await this.Client.ListSharesSegmentedAsync(prefix, detailsIncluded, null, continuationToken, options, operationContext, token);
                 foreach (var item in segment.Results)
                 {
                     enumerationAction(item);
@@ -99,7 +118,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Model.Contract
 
         public Task CreateShareAsync(CloudFileShare share, FileRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
         {
-            return share.ExistsAsync(options, operationContext, cancellationToken);
+            return share.CreateAsync(options, operationContext, cancellationToken);
         }
 
         public Task DeleteDirectoryAsync(CloudFileDirectory directory, AccessCondition accessCondition, FileRequestOptions options, OperationContext operationContext, CancellationToken cancellationToken)
