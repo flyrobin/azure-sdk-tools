@@ -67,8 +67,8 @@ namespace Microsoft.WindowsAzure.Commands.Storage.File
                     this.ParameterSetName == Constants.ShareNameParameterSetName ||
                     this.ParameterSetName == Constants.MatchingPrefixParameterSetName ||
                     this.ParameterSetName == Constants.SpecificParameterSetName ?
-                    this.GetCmdletStorageContext() :
-                    AzureStorageContext.MockInstance
+                        this.GetCmdletStorageContext() :
+                        AzureStorageContext.EmptyContextInstance
                 );
             }
 

@@ -23,6 +23,7 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Common
     using System.Threading;
     using System.Threading.Tasks;
     using Commands.Utilities.Common;
+    using Microsoft.WindowsAzure.Commands.Storage.File;
     using Microsoft.WindowsAzure.Storage;
     using Microsoft.WindowsAzure.Storage.Blob;
     using Microsoft.WindowsAzure.Storage.File;
@@ -376,6 +377,11 @@ namespace Microsoft.WindowsAzure.Commands.Storage.Common
             if (e is StorageException)
             {
                 e = ((StorageException)e).RepackStorageException();
+            }
+            else if (e is AzureStorageFileException)
+            {
+                WriteError(((AzureStorageFileException)e).GetErrorRecord());
+                return;
             }
 
             WriteError(new ErrorRecord(e, e.GetType().Name, GetExceptionErrorCategory(e), null));
